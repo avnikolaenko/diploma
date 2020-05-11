@@ -40,17 +40,24 @@ class DefectDataset(torch.utils.data.Dataset):
             boxes.append([xmin, ymin, xmax, ymax])
         boxes = torch.as_tensor(boxes, dtype=torch.float32)
         # Labels (In my case, I only one class: target class or background)
-        labels = [elem['category_id']+1 for elem in coco_annotation]
+        labels = [elem['category_id'] + 1 for elem in coco_annotation]
         labels = torch.as_tensor(labels, dtype=torch.int64)
 
+        img_id = torch.tensor([img_id])
+        # Size of bbox (Rectangular)
+        areas = []
+        for i in range(num_objs):
+            areas.append(coco_annotation[i]['area'])
+        areas = torch.as_tensor(areas, dtype=torch.float32)
+        iscrowd = torch.zeros((num_objs,), dtype=torch.int64)
+
         # Annotation is in dictionary format
-        annotation = {"boxes": boxes, "labels": labels}
+        target = {"boxes": boxes, "labels": labels, "image_id": img_id, "area": areas, "iscrowd": iscrowd}
 
         if self.transforms:
-            img = self.transforms(img)
+            img, target = self.transforms(img, target)
 
-        return img, annotation
+        return img, target
 
     def __len__(self):
         return len(self.ids)
-
