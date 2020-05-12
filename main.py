@@ -63,18 +63,19 @@ def main():
                                                    gamma=0.1)
 
     # let's train it for 10 epochs
-    num_epochs = 1
+    num_epochs = 35
 
     for epoch in range(num_epochs):
         # train for one epoch, printing every 10 iterations
-        #train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq=10)
+        train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq=10)
         # update the learning rate
-        #lr_scheduler.step()
+        lr_scheduler.step()
         # evaluate on the test dataset
         evaluate(model, data_loader_test, device=device)
 
     print("That's it!")
+    return model
 
 
 if __name__ == '__main__':
-    main()
+    model = main()
